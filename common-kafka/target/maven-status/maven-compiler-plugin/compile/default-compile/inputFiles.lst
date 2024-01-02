@@ -1,0 +1,5 @@
+/opt/workspace/ecommerce/common-kafka/src/main/java/br/com/alura/ecommerce/ConsumerFunction.java
+/opt/workspace/ecommerce/common-kafka/src/main/java/br/com/alura/ecommerce/KafkaService.java
+/opt/workspace/ecommerce/common-kafka/src/main/java/br/com/alura/ecommerce/KafkaDispatcher.java
+/opt/workspace/ecommerce/common-kafka/src/main/java/br/com/alura/ecommerce/GsonDeserializer.java
+/opt/workspace/ecommerce/common-kafka/src/main/java/br/com/alura/ecommerce/GsonSerializer.java
