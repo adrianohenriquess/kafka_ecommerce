@@ -1,0 +1,21 @@
+#cd /opt/kafka/kafka_2.13-3.6.1
+
+#./bin/zookeeper-server-start.sh config/zookeeper.properties
+#./bin/kafka-server-start.sh config/server.properties
+
+#./bin/kafka-console-consumer.sh --bootstrap-server
+   localhost:9092 --topic ECOMMERCE_NEW_ORDER --from-beginning
+
+#./bin/kafka-console-producer.sh --broker-list
+   localhost:9092 --topic ECOMMERCE_NEW_ORDER
+
+#./bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+#./bin/kafka-topics.sh --describe --bootstrap-server localhost:9092
+
+aumentar o numero de partições
+#./bin/kafka-topics.sh --alter --bootstrap-server localhost:9092
+ --topic ECOMMERCE_NEW_ORDER --partitions 3
+
+descrever os grupos de consumidores
+#./bin/kafka-consumer-groups.sh  --all-groups --bootstrap-server
+  localhost:9092 --describe
