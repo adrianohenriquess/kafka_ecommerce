@@ -19,3 +19,10 @@ aumentar o numero de partições
 descrever os grupos de consumidores
 #./bin/kafka-consumer-groups.sh  --all-groups --bootstrap-server
   localhost:9092 --describe
+
+#para adicionar replicas
+#devemos criar um arquivo novo de server properties
+#e adicionar as propriedades
+
+broker.id=2
+default.replication.factor=2
