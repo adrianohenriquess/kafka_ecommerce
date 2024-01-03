@@ -39,11 +39,11 @@ public class FraudDetectorService {
             //simulating a fraud
             System.out.println("Order is a fraud: " + order);
             orderDispatcher.send("ECOMMERCE_ORDER_REJECTED",
-                                        order.getUserId(), order);
+                                        order.getEmail(), order);
         } else {
             System.out.println("Approved: "+ order);
             orderDispatcher.send("ECOMMERCE_ORDER_APPROVED",
-                    order.getUserId(), order);
+                    order.getEmail(), order);
         }
     }
 
