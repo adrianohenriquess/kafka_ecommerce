@@ -13,8 +13,7 @@
 #./bin/kafka-topics.sh --describe --bootstrap-server localhost:9092
 
 aumentar o numero de partições
-#./bin/kafka-topics.sh --alter --bootstrap-server localhost:9092
- --topic ECOMMERCE_NEW_ORDER --partitions 3
+#./bin/kafka-topics.sh --alter --bootstrap-server localhost:9092 --topic ECOMMERCE_NEW_ORDER --partitions 3
 
 descrever os grupos de consumidores
 #./bin/kafka-consumer-groups.sh  --all-groups --bootstrap-server
