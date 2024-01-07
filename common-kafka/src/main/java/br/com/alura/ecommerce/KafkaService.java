@@ -17,12 +17,12 @@ class KafkaService<T> implements Closeable {
     private final KafkaConsumer<String, Message<T>> consumer;
     private final ConsumerFunction parse;
 
-    KafkaService(String groupId, String topic, ConsumerFunction<T> parse, Map<String,String> properties) {
+    KafkaService(String groupId, String topic, ConsumerFunction<T> parse, Map<String, String> properties) {
         this(parse, groupId, properties);
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse, Map<String,String> properties) {
+    KafkaService(String groupId, Pattern topic, ConsumerFunction<T> parse, Map<String, String> properties) {
         this(parse, groupId, properties);
         consumer.subscribe(topic);
     }
@@ -32,20 +32,27 @@ class KafkaService<T> implements Closeable {
         this.consumer = new KafkaConsumer<>(getProperties(groupId, properties));
     }
 
-    void run() {
-        while (true) {
-            var records = consumer.poll(Duration.ofMillis(100));
-            if (!records.isEmpty()) {
-                System.out.println("Encontrei " + records.count() + " registros");
-                for (var record : records) {
-                    try {
-                        parse.consume(record);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+    void run() throws ExecutionException, InterruptedException {
+        try (var deadLetter = new KafkaDispatcher<>()) {
+            while (true) {
+                var records = consumer.poll(Duration.ofMillis(100));
+                if (!records.isEmpty()) {
+                    System.out.println("Encontrei " + records.count() + " registros");
+                    for (var record : records) {
+                        try {
+                            parse.consume(record);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            var message = record.value();
+                            deadLetter.send("ECOMMERCE_DEADLETTER", message.getId().toString(),
+                                    message.getId().continueWith("DeadLetter"),
+                                    new GsonSerializer().serialize("", message));
+                        }
                     }
                 }
             }
         }
+
     }
 
     private Properties getProperties(String groupId, Map<String, String> overrideProperties) {
