@@ -1,5 +1,6 @@
-package br.com.alura.ecommerce;
+package br.com.alura.ecommerce.cosumer;
 
+import br.com.alura.ecommerce.Message;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.util.concurrent.ExecutionException;
