@@ -1,8 +1,8 @@
 package br.com.alura.ecommerce;
 
-import br.com.alura.ecommerce.cosumer.ConsumerService;
-import br.com.alura.ecommerce.cosumer.KafkaService;
-import br.com.alura.ecommerce.cosumer.ServiceRunner;
+import br.com.alura.ecommerce.consumer.ConsumerService;
+import br.com.alura.ecommerce.consumer.KafkaService;
+import br.com.alura.ecommerce.consumer.ServiceRunner;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.io.File;
@@ -15,22 +15,19 @@ public class ReadingReportService implements ConsumerService<User> {
 
     private static final Path SOURCE = new File("src/main/resources/report.txt").toPath();
 
-    public static final int THREADS = 5;
-
     public static void main(String[] args) {
-        new ServiceRunner(ReadingReportService::new).start(THREADS);
+        new ServiceRunner(ReadingReportService::new).start(5);
     }
 
-    public void parse(ConsumerRecord<String, Message<User>> record) throws IOException{
+    public void parse(ConsumerRecord<String, Message<User>> record) throws IOException {
         System.out.println("------------------------------------------");
-        System.out.println("Processing report for record: " + record.value());
+        System.out.println("Processing report for " + record.value());
 
         var message = record.value();
         var user = message.getPayload();
         var target = new File(user.getReportPath());
         IO.copyTo(SOURCE, target);
-        IO.append(target, "Created for: " + user.getUuid());
-
+        IO.append(target, "Created for " + user.getUuid());
 
         System.out.println("File created: " + target.getAbsolutePath());
 

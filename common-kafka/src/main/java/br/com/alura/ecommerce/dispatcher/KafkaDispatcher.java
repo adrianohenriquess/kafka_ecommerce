@@ -27,8 +27,6 @@ public class KafkaDispatcher<T> implements Closeable {
         return properties;
     }
 
-
-
     public void send(String topic, String key, CorrelationId id, T payload) throws ExecutionException, InterruptedException {
         Future<RecordMetadata> future = sendAsync(topic, key, id, payload);
         future.get();

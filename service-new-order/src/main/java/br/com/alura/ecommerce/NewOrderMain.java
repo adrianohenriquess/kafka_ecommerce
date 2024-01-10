@@ -17,8 +17,10 @@ public class NewOrderMain {
                 var amount = new BigDecimal(Math.random() * 5000 + 1);
 
                 var id = new CorrelationId(NewOrderMain.class.getSimpleName());
+
                 var order = new Order(orderId, amount, email);
-                orderDispatcher.send("ECOMMERCE_NEW_ORDER", email, id, order);
+                orderDispatcher.send("ECOMMERCE_NEW_ORDER", email,
+                        id, order);
             }
         }
     }

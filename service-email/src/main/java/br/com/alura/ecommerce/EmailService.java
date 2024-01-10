@@ -1,15 +1,13 @@
 package br.com.alura.ecommerce;
 
-import br.com.alura.ecommerce.cosumer.ConsumerService;
-import br.com.alura.ecommerce.cosumer.ServiceRunner;
+import br.com.alura.ecommerce.consumer.ConsumerService;
+import br.com.alura.ecommerce.consumer.ServiceRunner;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class EmailService implements ConsumerService<String> {
 
-    public static final int THREADS = 5;
-
     public static void main(String[] args) {
-        new ServiceRunner(EmailService::new).start(THREADS);
+        new ServiceRunner(EmailService::new).start(5);
     }
 
     public String getConsumerGroup() {

@@ -15,6 +15,6 @@ public class Order {
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 }

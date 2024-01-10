@@ -10,6 +10,10 @@ public class Message<T> {
         this.payload = payload;
     }
 
+    public CorrelationId getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -20,9 +24,5 @@ public class Message<T> {
 
     public T getPayload() {
         return payload;
-    }
-
-    public CorrelationId getId() {
-        return id;
     }
 }

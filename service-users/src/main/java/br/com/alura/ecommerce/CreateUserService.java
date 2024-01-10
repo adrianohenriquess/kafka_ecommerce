@@ -1,65 +1,59 @@
 package br.com.alura.ecommerce;
 
-import br.com.alura.ecommerce.cosumer.KafkaService;
+import br.com.alura.ecommerce.consumer.ConsumerService;
+import br.com.alura.ecommerce.consumer.ServiceRunner;
+import br.com.alura.ecommerce.database.LocalDatabase;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.sql.*;
-import java.util.Map;
+import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-public class CreateUserService {
+public class CreateUserService implements ConsumerService<Order> {
 
-    private final Connection connection;
+    private final LocalDatabase database;
 
     CreateUserService() throws SQLException {
-        String url = "jdbc:sqlite:target/users_database.db";
-        connection = DriverManager.getConnection(url);
-        try {
-            connection.createStatement().execute("create table Users (" +
-                    "uuid varchar(200) primary key, " +
-                    "email varchar(200))");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.database = new LocalDatabase("users_database");
+        this.database.createIfNotExists("create table Users (" +
+                "uuid varchar(200) primary key," +
+                "email varchar(200))");
     }
 
-    public static void main(String[] args) throws SQLException, ExecutionException, InterruptedException {
-        var createUserService = new CreateUserService();
-        try (var service = new KafkaService<>(CreateUserService.class.getSimpleName(),
-                "ECOMMERCE_NEW_ORDER",
-                createUserService::parse,
-                Map.of())) {
-            service.run();
-        }
+    public static void main(String[] args) {
+        new ServiceRunner<>(CreateUserService::new).start(1);
     }
 
-    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException, SQLException {
+    @Override
+    public String getConsumerGroup() {
+        return CreateUserService.class.getSimpleName();
+    }
+
+    @Override
+    public String getTopic() {
+        return "ECOMMERCE_NEW_ORDER";
+    }
+
+    public void parse(ConsumerRecord<String, Message<Order>> record) throws SQLException {
         System.out.println("------------------------------------------");
-        System.out.println("Processing new order, checking new user");
-        System.out.println(record.key());
+        System.out.println("Processing new order, checking for new user");
         System.out.println(record.value());
-        var message = record.value();
-        var order = message.getPayload();
+        var order = record.value().getPayload();
         if (isNewUser(order.getEmail())) {
-            insertNewUser(order);
+            insertNewUser(order.getEmail());
         }
     }
 
-    private void insertNewUser(Order order) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into Users (uuid, email) " +
-                " values (?,?)");
-        preparedStatement.setString(1, UUID.randomUUID().toString());
-        preparedStatement.setString(2, order.getEmail());
-        preparedStatement.execute();
-        System.out.println("Usuario adicionado: " + order.getEmail());
+    private void insertNewUser(String email) throws SQLException {
+        var uuid = UUID.randomUUID().toString();
+        database.update("insert into Users (uuid, email) " +
+                "values (?,?)", uuid, email);
+        System.out.println("Usuário " + uuid + " e " + email + " adicionado");
     }
 
     private boolean isNewUser(String email) throws SQLException {
-        PreparedStatement exists = connection.prepareStatement("select uuid from Users " +
-                "where email = ? limit 1");
-        exists.setString(1, email);
-        ResultSet results = exists.executeQuery();
+        var results = database.query("select uuid from Users " +
+                "where email = ? limit 1", email);
         return !results.next();
     }
+
 }

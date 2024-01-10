@@ -6,8 +6,8 @@ public class CorrelationId {
 
     private final String id;
 
-    public CorrelationId(String title) {
-        this.id = title + "(" + UUID.randomUUID().toString() + ")";
+    CorrelationId(String title) {
+        id = title + "(" + UUID.randomUUID().toString() + ")";
     }
 
     @Override
